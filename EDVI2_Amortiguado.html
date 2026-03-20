@@ -559,40 +559,46 @@ function drawSpring(ctx,x1,y,x2,coils,amp,color){
   ctx.lineTo(x2,y);ctx.stroke();
 }
 
+// Amortiguador horizontal: cilindro FIJO a la pared derecha, vástago móvil conectado al bloque.
+// x1 = lado derecho del bloque (móvil)  |  x2 = pared derecha (fija)
 function drawDamper(ctx,x1,x2,cy,active){
-  // Color según régimen cuando activo
   const reg=regime();
   const col=!active?'#cbd5e1':reg==='sub'?'#1d6fd8':reg==='crit'?'#b45309':'#dc2626';
   const cylH=active?20:16;
-  // Calcular extensión del pistón basada en posición actual
-  const i=Math.min(Math.round(tSim/DT),trailA.length-1);
-  const xCur=trailA[i]?.x??x0;
-  const maxA=Math.max(Math.abs(x0),0.1);
-  // El pistón se mueve dentro del cilindro proporcionalmente a x
-  const pistonOffset=active?Math.round((xCur/maxA)*6):0;
+  const cylW=32;
 
-  const mid=(x1+x2)/2;
+  // Cilindro fijo: su extremo derecho toca la pared
+  const cylRight=x2;
+  const cylLeft=cylRight-cylW;
+
   ctx.strokeStyle=col;ctx.lineWidth=active?2:1.2;
-  // rod left (conecta al bloque)
-  ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(mid-10,cy);ctx.stroke();
-  // cylinder body
-  rrect(ctx,mid-10,cy-cylH/2,28+pistonOffset,cylH,3);
-  ctx.stroke();
-  // piston rod (sale del cilindro hacia la derecha / pared)
-  const pistonX=mid-10+28+pistonOffset;
-  ctx.beginPath();ctx.moveTo(pistonX,cy-cylH/2+3);ctx.lineTo(pistonX,cy+cylH/2-3);ctx.stroke();
-  // rod right (conecta a la pared)
-  ctx.beginPath();ctx.moveTo(pistonX,cy);ctx.lineTo(x2,cy);ctx.stroke();
 
-  if(!active){
-    ctx.fillStyle='#94a3b8';ctx.font='9px Inter,sans-serif';
-    ctx.textAlign='center';ctx.textBaseline='bottom';
-    ctx.fillText('β = 0  (inactivo)',(x1+x2)/2,cy-cylH/2-2);
-  } else {
-    ctx.fillStyle=col;ctx.font='bold 9px Inter,sans-serif';
-    ctx.textAlign='center';ctx.textBaseline='bottom';
-    ctx.fillText(`β = ${b.toFixed(1)} N·s/m`,(x1+x2)/2,cy-cylH/2-2);
-  }
+  // Cuerpo del cilindro (fijo)
+  rrect(ctx,cylLeft,cy-cylH/2,cylW,cylH,3);
+  ctx.stroke();
+
+  // Tapa izquierda con orificio (por donde sale el vástago)
+  ctx.beginPath();
+  ctx.moveTo(cylLeft+3,cy-cylH/2+3);
+  ctx.lineTo(cylLeft+3,cy+cylH/2-3);
+  ctx.stroke();
+
+  // Vástago: del cilindro al bloque (se mueve con el bloque)
+  ctx.lineWidth=active?3:2;
+  ctx.beginPath();ctx.moveTo(cylLeft,cy);ctx.lineTo(x1,cy);ctx.stroke();
+
+  // Anclaje vástago-bloque
+  ctx.beginPath();ctx.arc(x1,cy,3,0,2*Math.PI);
+  ctx.fillStyle=col;ctx.fill();
+
+  // Etiqueta
+  ctx.fillStyle=col;
+  ctx.font=active?'bold 9px Inter,sans-serif':'9px Inter,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  ctx.fillText(
+    active?`β = ${b.toFixed(1)} N·s/m`:'β = 0  (inactivo)',
+    (cylLeft+cylRight)/2, cy-cylH/2-2
+  );
 }
 
 function drawAnim(){
