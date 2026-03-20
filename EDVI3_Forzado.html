@@ -808,21 +808,38 @@ function drawSpring(ctx,x1,y,x2,coils,amp,color){
   ctx.lineTo(x2,y);ctx.stroke();
 }
 
+// Amortiguador horizontal: cilindro FIJO a la pared derecha, vástago móvil conectado al bloque.
+// x1 = lado derecho del bloque (móvil)  |  x2 = pared derecha (fija)
 function drawDamper(ctx,x1,x2,cy){
-  const i=Math.min(Math.round(tSim/DT),trailA.length-1);
-  const xC=trailA[i]?.x??0;
-  const maxA=Math.max(Math.abs(x0),0.5);
-  const pistonOff=Math.round((xC/maxA)*5);
-  const mid=(x1+x2)/2,cylH=18;
+  const cylH=18, cylW=32;
+
+  // Cilindro fijo anclado a la pared derecha
+  const cylRight=x2;
+  const cylLeft=cylRight-cylW;
+
   ctx.strokeStyle='#6d28d9';ctx.lineWidth=1.8;
-  ctx.beginPath();ctx.moveTo(x1,cy);ctx.lineTo(mid-10,cy);ctx.stroke();
-  rrect(ctx,mid-10,cy-cylH/2,26+pistonOff,cylH,3);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(mid-10+26+pistonOff,cy-cylH/2+3);
-  ctx.lineTo(mid-10+26+pistonOff,cy+cylH/2-3);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(mid-10+26+pistonOff,cy);ctx.lineTo(x2,cy);ctx.stroke();
+
+  // Cuerpo del cilindro (fijo)
+  rrect(ctx,cylLeft,cy-cylH/2,cylW,cylH,3);ctx.stroke();
+
+  // Tapa izquierda con orificio
+  ctx.beginPath();
+  ctx.moveTo(cylLeft+3,cy-cylH/2+3);
+  ctx.lineTo(cylLeft+3,cy+cylH/2-3);
+  ctx.stroke();
+
+  // Vástago: del cilindro al bloque (móvil con el bloque)
+  ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cylLeft,cy);ctx.lineTo(x1,cy);ctx.stroke();
+
+  // Anclaje vástago-bloque
+  ctx.beginPath();ctx.arc(x1,cy,3,0,2*Math.PI);
+  ctx.fillStyle='#6d28d9';ctx.fill();
+
+  // Etiqueta
   ctx.fillStyle='#6d28d9';ctx.font='bold 9px Inter,sans-serif';
   ctx.textAlign='center';ctx.textBaseline='bottom';
-  ctx.fillText(`β=${b.toFixed(1)} N·s/m`,(x1+x2)/2,cy-cylH/2-2);
+  ctx.fillText(`β = ${b.toFixed(1)} N·s/m`,(cylLeft+cylRight)/2,cy-cylH/2-2);
 }
 
 function drawForceArrow(ctx,bCx,bT,cy,xC){
