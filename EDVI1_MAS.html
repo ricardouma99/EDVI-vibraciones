@@ -95,6 +95,10 @@ input[type=range]::-moz-range-thumb{
 .num-input::-webkit-inner-spin-button,
 .num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .num-input:focus{outline:2px solid var(--blue);outline-offset:1px}
+.num-input.error{border-color:var(--red);background:var(--red-lt);color:var(--red)}
+.num-input.error:focus{outline-color:var(--red)}
+.val-msg{font-size:9px;color:var(--red);margin-top:2px;display:none;font-family:var(--mono)}
+.val-msg.visible{display:block}
 .slider-row{display:flex;align-items:center;gap:8px}
 .slider-row input[type=range]{flex:1}
 
@@ -180,7 +184,7 @@ input[type=range]::-moz-range-thumb{
         </div>
         <div class="slider-row">
           <input type="range" id="sl_m" min="0.5" max="10" step="0.5" value="2">
-          <input type="number" class="num-input" id="ni_m" min="0.5" max="10" step="0.5" value="2">
+          <input type="number" class="num-input" id="ni_m" step="any" value="2"><div class="val-msg" id="msg_m">Debe ser un valor positivo</div>
         </div>
       </div>
       <div class="ctrl">
@@ -190,7 +194,7 @@ input[type=range]::-moz-range-thumb{
         </div>
         <div class="slider-row">
           <input type="range" id="sl_k" min="1" max="100" step="1" value="8">
-          <input type="number" class="num-input" id="ni_k" min="1" max="100" step="1" value="8">
+          <input type="number" class="num-input" id="ni_k" step="any" value="8"><div class="val-msg" id="msg_k">Debe ser un valor positivo</div>
         </div>
       </div>
     </div>
@@ -204,7 +208,7 @@ input[type=range]::-moz-range-thumb{
         </div>
         <div class="slider-row">
           <input type="range" id="sl_x0" min="-2" max="2" step="0.1" value="1">
-          <input type="number" class="num-input" id="ni_x0" min="-2" max="2" step="0.1" value="1">
+          <input type="number" class="num-input" id="ni_x0" step="any" value="1">
         </div>
       </div>
       <div class="ctrl">
@@ -214,7 +218,7 @@ input[type=range]::-moz-range-thumb{
         </div>
         <div class="slider-row">
           <input type="range" id="sl_v0" min="-5" max="5" step="0.1" value="0">
-          <input type="number" class="num-input" id="ni_v0" min="-5" max="5" step="0.1" value="0">
+          <input type="number" class="num-input" id="ni_v0" step="any" value="0">
         </div>
       </div>
     </div>
@@ -582,44 +586,69 @@ document.getElementById('btn_reveal').addEventListener('click',()=>{
   render();
 });
 
-// Sincronización bidireccional slider ↔ campo numérico
-function bindSlider(slId, niId, dec, setter){
+// ── BIND SLIDER: sincronización slider ↔ campo numérico ──
+// positiveOnly: si true, rechaza valores ≤ 0
+function bindSlider(slId, niId, dec, setter, positiveOnly){
   const sl = document.getElementById(slId);
   const ni = document.getElementById(niId);
+  const msgId = slId.replace('sl_','msg_');
+  const msg = document.getElementById(msgId);
   if(!sl || !ni) return;
 
-  // Slider → campo numérico + acción
+  function showError(show){
+    ni.classList.toggle('error', show);
+    if(msg) msg.classList.toggle('visible', show);
+  }
+
+  // Slider → campo + acción (el slider siempre está dentro de rango)
   sl.addEventListener('input', ()=>{
     const v = parseFloat(sl.value);
     setter(v);
     ni.value = v.toFixed(dec);
+    showError(false);
     reset();
   });
 
-  // Campo numérico → slider + acción
+  // Campo numérico → acción (libre, con validación)
   ni.addEventListener('change', ()=>{
     let v = parseFloat(ni.value);
+
+    // Valor inválido o vacío: restaurar
+    if(isNaN(v)){
+      ni.value = parseFloat(sl.value).toFixed(dec);
+      showError(false);
+      return;
+    }
+
+    // Validación positivo estricto para m y k
+    if(positiveOnly && v <= 0){
+      showError(true);
+      ni.value = parseFloat(sl.value).toFixed(dec);
+      return;
+    }
+    showError(false);
+
+    // Actualizar slider si el valor está dentro de su rango
     const mn = parseFloat(sl.min), mx = parseFloat(sl.max);
-    if(isNaN(v)) v = parseFloat(sl.value);
-    v = Math.min(mx, Math.max(mn, v));
-    // Redondear al step más cercano
-    const st = parseFloat(sl.step)||1;
-    v = Math.round(v/st)*st;
-    v = Math.round(v*1e6)/1e6; // evitar artefactos de coma flotante
-    sl.value = v;
+    if(v >= mn && v <= mx){
+      sl.value = v;
+    } else {
+      // Fuera del rango del slider: mover al extremo más cercano visualmente
+      sl.value = Math.min(mx, Math.max(mn, v));
+    }
+
     ni.value = v.toFixed(dec);
     setter(v);
     reset();
   });
 
-  // En móvil: al tocar el campo abre el teclado numérico
   ni.addEventListener('focus', ()=> ni.select());
 }
 
-bindSlider('sl_m',  'ni_m',  2, v=>{ m=v; });
-bindSlider('sl_k',  'ni_k',  2, v=>{ k=v; });
-bindSlider('sl_x0', 'ni_x0', 2, v=>{ x0=v; });
-bindSlider('sl_v0', 'ni_v0', 2, v=>{ v0=v; });
+bindSlider('sl_m',  'ni_m',  2, v=>{ m=v;  }, true);   // positivo estricto
+bindSlider('sl_k',  'ni_k',  2, v=>{ k=v;  }, true);   // positivo estricto
+bindSlider('sl_x0', 'ni_x0', 2, v=>{ x0=v; }, false);  // cualquier real
+bindSlider('sl_v0', 'ni_v0', 2, v=>{ v0=v; }, false);  // cualquier real
 window.addEventListener('resize',render);
 window.addEventListener('load',reset);
 </script>
