@@ -54,13 +54,49 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
 .ctrl-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--blue);background:var(--blue-lt);padding:1px 8px;border-radius:4px;white-space:nowrap}
 .ctrl-val.coral{color:var(--coral);background:var(--coral-lt);border:1px solid #fdba74}
 .ctrl-val.amber{color:var(--amber);background:var(--amber-lt)}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border2);cursor:pointer;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 1px 4px rgba(29,111,216,.3)}
-input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--blue);border:2px solid #fff}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  border-radius:3px;background:var(--border2);
+  cursor:pointer;outline:none;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--blue);
+  border:3px solid #fff;
+  box-shadow:0 1px 6px rgba(29,111,216,.4);
+}
+input[type=range]::-moz-range-thumb{
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--blue);
+  border:3px solid #fff;
+}
 input[type=range].coral-t::-webkit-slider-thumb{background:var(--coral)}
 input[type=range].coral-t::-moz-range-thumb{background:var(--coral)}
 input[type=range].amber-t::-webkit-slider-thumb{background:var(--amber)}
 input[type=range].amber-t::-moz-range-thumb{background:var(--amber)}
+.num-input{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--blue);background:var(--blue-lt);
+  border:1.5px solid var(--blue-mid);
+  border-radius:5px;padding:3px 6px;
+  width:76px;text-align:right;
+  -moz-appearance:textfield;
+  touch-action:manipulation;
+}
+.num-input.coral{color:var(--coral);background:var(--coral-lt);border-color:#fdba74}
+.num-input.amber{color:var(--amber);background:var(--amber-lt);border-color:#fcd34d}
+.num-input::-webkit-inner-spin-button,
+.num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.num-input:focus{outline:2px solid var(--blue);outline-offset:1px}
+.num-input.coral:focus{outline-color:var(--coral)}
+.num-input.amber:focus{outline-color:var(--amber)}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-row input[type=range]{flex:1}
 
 /* Chips derivados */
 .der-chip{display:flex;justify-content:space-between;align-items:center;gap:6px;border-radius:5px;padding:4px 9px;margin-bottom:4px}
@@ -160,14 +196,12 @@ input[type=range].amber-t::-moz-range-thumb{background:var(--amber)}
     <div class="cg">
       <div class="cg-title">Parámetros del sistema</div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Masa $m$</span>
-          <span class="ctrl-val"><span id="lbl_m">2.00</span> kg</span></div>
-        <input type="range" id="sl_m" min="0.5" max="10" step="0.5" value="2">
+        <div class="ctrl-head"><span class="ctrl-name">Masa $m$</span><span style="font-size:10px;color:var(--text3)">kg</span></div>
+        <div class="slider-row"><input type="range" id="sl_m" min="0.5" max="10" step="0.5" value="2"><input type="number" class="num-input" id="ni_m" min="0.5" max="10" step="0.5" value="2"></div>
       </div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Rigidez $k$</span>
-          <span class="ctrl-val"><span id="lbl_k">8.00</span> N/m</span></div>
-        <input type="range" id="sl_k" min="1" max="100" step="1" value="8">
+        <div class="ctrl-head"><span class="ctrl-name">Rigidez $k$</span><span style="font-size:10px;color:var(--text3)">N/m</span></div>
+        <div class="slider-row"><input type="range" id="sl_k" min="1" max="100" step="1" value="8"><input type="number" class="num-input" id="ni_k" min="1" max="100" step="1" value="8"></div>
       </div>
     </div>
 
@@ -187,13 +221,13 @@ input[type=range].amber-t::-moz-range-thumb{background:var(--amber)}
 
       <div class="ctrl">
         <div class="ctrl-head"><span class="ctrl-name">Amplitud $f_0$</span>
-          <span class="ctrl-val amber"><span id="lbl_f0">10.0</span> N</span></div>
-        <input type="range" id="sl_f0" min="1" max="50" step="0.5" value="10" class="amber-t">
+          <span style="font-size:10px;color:var(--text3)">N</span></div>
+        <div class="slider-row"><input type="range" id="sl_f0" min="1" max="50" step="0.5" value="10" class="amber-t"><input type="number" class="num-input amber" id="ni_f0" min="1" max="50" step="0.5" value="10"></div>
       </div>
       <div class="ctrl">
         <div class="ctrl-head"><span class="ctrl-name">Frec. excitación $\omega_e$</span>
-          <span class="ctrl-val coral"><span id="lbl_we">1.50</span> rad/s</span></div>
-        <input type="range" id="sl_we" min="0.1" max="12" step="0.05" value="1.5" class="coral-t">
+          <span style="font-size:10px;color:var(--text3)">rad/s</span></div>
+        <div class="slider-row"><input type="range" id="sl_we" min="0.1" max="12" step="0.05" value="1.5" class="coral-t"><input type="number" class="num-input coral" id="ni_we" min="0.1" max="12" step="0.05" value="1.5"></div>
       </div>
     </div>
 
@@ -217,13 +251,13 @@ input[type=range].amber-t::-moz-range-thumb{background:var(--amber)}
       <div class="cg-title">Condiciones iniciales</div>
       <div class="ctrl">
         <div class="ctrl-head"><span class="ctrl-name">Posición $x_0$</span>
-          <span class="ctrl-val"><span id="lbl_x0">0.00</span> m</span></div>
-        <input type="range" id="sl_x0" min="-2" max="2" step="0.1" value="0">
+          <span style="font-size:10px;color:var(--text3)">m</span></div>
+        <div class="slider-row"><input type="range" id="sl_x0" min="-2" max="2" step="0.1" value="0"><input type="number" class="num-input" id="ni_x0" min="-2" max="2" step="0.1" value="0"></div>
       </div>
       <div class="ctrl">
         <div class="ctrl-head"><span class="ctrl-name">Velocidad $v_0$</span>
-          <span class="ctrl-val"><span id="lbl_v0">0.00</span> m/s</span></div>
-        <input type="range" id="sl_v0" min="-5" max="5" step="0.1" value="0">
+          <span style="font-size:10px;color:var(--text3)">m/s</span></div>
+        <div class="slider-row"><input type="range" id="sl_v0" min="-5" max="5" step="0.1" value="0"><input type="number" class="num-input" id="ni_v0" min="-5" max="5" step="0.1" value="0"></div>
       </div>
       <button class="btn-rand" id="btn_rand" title="Condiciones iniciales aleatorias para observar el fenómeno">
         🎲 Condiciones aleatorias
@@ -476,8 +510,14 @@ function randomCI(){
   x0=sc.x0; v0=sc.v0;
   document.getElementById('sl_x0').value=x0;
   document.getElementById('sl_v0').value=v0;
-  document.getElementById('lbl_x0').textContent=x0.toFixed(2);
-  document.getElementById('lbl_v0').textContent=v0.toFixed(2);
+  const niX0=document.getElementById('ni_x0');
+  const niV0=document.getElementById('ni_v0');
+  if(niX0) niX0.value=x0.toFixed(2);
+  if(niV0) niV0.value=v0.toFixed(2);
+  const slX0=document.getElementById('sl_x0');
+  const slV0=document.getElementById('sl_v0');
+  if(slX0) slX0.value=x0;
+  if(slV0) slV0.value=v0;
   // Mostrar breve tooltip
   const btn=document.getElementById('btn_rand');
   btn.textContent=`✓ ${sc.label}`;
@@ -907,16 +947,33 @@ document.getElementById('btn_reveal').addEventListener('click',()=>{
   render();
 });
 
-function bindSlider(id,lblId,dec,setter){
-  const sl=document.getElementById(id),lb=document.getElementById(lblId);
-  sl.addEventListener('input',()=>{const v=parseFloat(sl.value);setter(v);lb.textContent=v.toFixed(dec);reset();});
+function bindSlider(slId,niId,dec,setter){
+  const sl=document.getElementById(slId);
+  const ni=document.getElementById(niId);
+  if(!sl||!ni) return;
+  sl.addEventListener('input',()=>{
+    const v=parseFloat(sl.value);
+    setter(v);ni.value=v.toFixed(dec);reset();
+  });
+  ni.addEventListener('change',()=>{
+    let v=parseFloat(ni.value);
+    const mn=parseFloat(sl.min),mx=parseFloat(sl.max);
+    if(isNaN(v)) v=parseFloat(sl.value);
+    v=Math.min(mx,Math.max(mn,v));
+    const st=parseFloat(sl.step)||1;
+    v=Math.round(v/st)*st;
+    v=Math.round(v*1e6)/1e6;
+    sl.value=v;ni.value=v.toFixed(dec);
+    setter(v);reset();
+  });
+  ni.addEventListener('focus',()=>ni.select());
 }
-bindSlider('sl_m','lbl_m',2,v=>{m=v;});
-bindSlider('sl_k','lbl_k',2,v=>{k=v;});
-bindSlider('sl_f0','lbl_f0',1,v=>{f0=v;});
-bindSlider('sl_we','lbl_we',2,v=>{we=v;});
-bindSlider('sl_x0','lbl_x0',2,v=>{x0=v;});
-bindSlider('sl_v0','lbl_v0',2,v=>{v0=v;});
+bindSlider('sl_m','ni_m',2,v=>{m=v;});
+bindSlider('sl_k','ni_k',2,v=>{k=v;});
+bindSlider('sl_f0','ni_f0',1,v=>{f0=v;});
+bindSlider('sl_we','ni_we',2,v=>{we=v;});
+bindSlider('sl_x0','ni_x0',2,v=>{x0=v;});
+bindSlider('sl_v0','ni_v0',2,v=>{v0=v;});
 
 window.addEventListener('resize',render);
 window.addEventListener('load',reset);
