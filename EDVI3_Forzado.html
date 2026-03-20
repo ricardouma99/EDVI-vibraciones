@@ -56,13 +56,47 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
 .ctrl-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--blue);background:var(--blue-lt);padding:1px 8px;border-radius:4px;white-space:nowrap}
 .ctrl-val.green{color:var(--green);background:var(--green-lt)}
 .ctrl-val.purple{color:var(--purple);background:var(--purple-lt)}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border2);cursor:pointer;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 1px 4px rgba(29,111,216,.3)}
-input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--blue);border:2px solid #fff}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  border-radius:3px;background:var(--border2);
+  cursor:pointer;outline:none;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--blue);
+  border:3px solid #fff;
+  box-shadow:0 1px 6px rgba(29,111,216,.4);
+}
+input[type=range]::-moz-range-thumb{
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--blue);
+  border:3px solid #fff;
+}
 input[type=range].green-t::-webkit-slider-thumb{background:var(--green)}
 input[type=range].green-t::-moz-range-thumb{background:var(--green)}
 input[type=range].purple-t::-webkit-slider-thumb{background:var(--purple)}
 input[type=range].purple-t::-moz-range-thumb{background:var(--purple)}
+.num-input{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--blue);background:var(--blue-lt);
+  border:1.5px solid var(--blue-mid);
+  border-radius:5px;padding:3px 6px;
+  width:76px;text-align:right;
+  -moz-appearance:textfield;
+  touch-action:manipulation;
+}
+.num-input.green{color:var(--green);background:var(--green-lt);border-color:#86efac}
+.num-input::-webkit-inner-spin-button,
+.num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.num-input:focus{outline:2px solid var(--blue);outline-offset:1px}
+.num-input.green:focus{outline-color:var(--green)}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-row input[type=range]{flex:1}
 
 /* Stats */
 .stats{display:flex;gap:5px;flex-wrap:wrap}
@@ -109,6 +143,24 @@ input[type=range].purple-t::-moz-range-thumb{background:var(--purple)}
 .fp-row{display:flex;align-items:center;gap:7px}
 .fp-row input[type=range]{flex:1}
 .fp-val{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--purple);background:var(--purple-lt);padding:1px 7px;border-radius:4px;white-space:nowrap;min-width:68px;text-align:right}
+.num-input.purple{
+  color:var(--purple);background:var(--purple-lt);
+  border-color:#c4b5fd;font-size:11px;width:70px;
+}
+.num-input.purple:focus{outline-color:var(--purple)}
+.fp-row input[type=range]{
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.fp-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;
+  border-radius:50%;background:var(--purple);
+  border:3px solid #fff;box-shadow:0 1px 5px rgba(109,40,217,.35);
+}
+.fp-row input[type=range]::-moz-range-thumb{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--purple);border:3px solid #fff;
+}
 
 .force-preview{display:flex;gap:12px;align-items:center;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;padding:8px 12px}
 .prev-eq-wrap{display:flex;flex-direction:column;gap:4px;min-width:180px}
@@ -175,33 +227,28 @@ input[type=range].purple-t::-moz-range-thumb{background:var(--purple)}
     <div class="cg">
       <div class="cg-title">Parámetros del sistema</div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Masa $m$</span>
-          <span class="ctrl-val"><span id="lbl_m">2.00</span> kg</span></div>
-        <input type="range" id="sl_m" min="0.5" max="10" step="0.5" value="2">
+        <div class="ctrl-head"><span class="ctrl-name">Masa $m$</span><span style="font-size:10px;color:var(--text3)">kg</span></div>
+        <div class="slider-row"><input type="range" id="sl_m" min="0.5" max="10" step="0.5" value="2"><input type="number" class="num-input" id="ni_m" min="0.5" max="10" step="0.5" value="2"></div>
       </div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Rigidez $k$</span>
-          <span class="ctrl-val"><span id="lbl_k">8.00</span> N/m</span></div>
-        <input type="range" id="sl_k" min="1" max="100" step="1" value="8">
+        <div class="ctrl-head"><span class="ctrl-name">Rigidez $k$</span><span style="font-size:10px;color:var(--text3)">N/m</span></div>
+        <div class="slider-row"><input type="range" id="sl_k" min="1" max="100" step="1" value="8"><input type="number" class="num-input" id="ni_k" min="1" max="100" step="1" value="8"></div>
       </div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Amortiguamiento $\beta$</span>
-          <span class="ctrl-val green"><span id="lbl_b">1.00</span> N·s/m</span></div>
-        <input type="range" id="sl_b" min="0.1" max="60" step="0.5" value="1" class="green-t">
+        <div class="ctrl-head"><span class="ctrl-name">Amortiguamiento $\beta$</span><span style="font-size:10px;color:var(--text3)">N·s/m</span></div>
+        <div class="slider-row"><input type="range" id="sl_b" min="0.1" max="60" step="0.5" value="1" class="green-t"><input type="number" class="num-input green" id="ni_b" min="0.1" max="60" step="0.5" value="1"></div>
       </div>
     </div>
 
     <div class="cg">
       <div class="cg-title">Condiciones iniciales</div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Posición $x_0$</span>
-          <span class="ctrl-val"><span id="lbl_x0">0.00</span> m</span></div>
-        <input type="range" id="sl_x0" min="-2" max="2" step="0.1" value="0">
+        <div class="ctrl-head"><span class="ctrl-name">Posición $x_0$</span><span style="font-size:10px;color:var(--text3)">m</span></div>
+        <div class="slider-row"><input type="range" id="sl_x0" min="-2" max="2" step="0.1" value="0"><input type="number" class="num-input" id="ni_x0" min="-2" max="2" step="0.1" value="0"></div>
       </div>
       <div class="ctrl">
-        <div class="ctrl-head"><span class="ctrl-name">Velocidad $v_0$</span>
-          <span class="ctrl-val"><span id="lbl_v0">0.00</span> m/s</span></div>
-        <input type="range" id="sl_v0" min="-5" max="5" step="0.1" value="0">
+        <div class="ctrl-head"><span class="ctrl-name">Velocidad $v_0$</span><span style="font-size:10px;color:var(--text3)">m/s</span></div>
+        <div class="slider-row"><input type="range" id="sl_v0" min="-5" max="5" step="0.1" value="0"><input type="number" class="num-input" id="ni_v0" min="-5" max="5" step="0.1" value="0"></div>
       </div>
     </div>
 
@@ -631,28 +678,54 @@ function rebuildFpParams(){
   area.innerHTML='';
   paramDefs[curType].forEach((pd,i)=>{
     const val=pVals[curType][i]??pd.val;
+    const dec=pd.step<1?2:1;
     const div=document.createElement('div');
     div.className='fp-ctrl';
     div.innerHTML=`<div class="fp-label">${pd.label} (${pd.unit})</div>
       <div class="fp-row">
         <input type="range" min="${pd.min}" max="${pd.max}" step="${pd.step}" value="${val}"
-          oninput="pVals['${curType}'][${i}]=parseFloat(this.value);updateFpPreview()" class="purple-t">
-        <span class="fp-val" id="fpv_${i}">${parseFloat(val).toFixed(pd.step<1?2:1)} ${pd.unit}</span>
+          id="fpsl_${i}" class="purple-t">
+        <input type="number" class="num-input purple" id="fpv_${i}"
+          min="${pd.min}" max="${pd.max}" step="${pd.step}"
+          value="${parseFloat(val).toFixed(dec)}">
       </div>`;
     area.appendChild(div);
     pVals[curType][i]=parseFloat(val);
+
+    // Sincronización bidireccional para cada param de fuerza
+    const sl=div.querySelector('input[type=range]');
+    const ni=div.querySelector('input[type=number]');
+    sl.addEventListener('input',()=>{
+      const v=parseFloat(sl.value);
+      pVals[curType][i]=v;
+      ni.value=v.toFixed(dec);
+      updateFpPreview();
+    });
+    ni.addEventListener('change',()=>{
+      let v=parseFloat(ni.value);
+      const mn=parseFloat(sl.min),mx=parseFloat(sl.max);
+      if(isNaN(v)) v=parseFloat(sl.value);
+      v=Math.min(mx,Math.max(mn,v));
+      const st=parseFloat(sl.step)||1;
+      v=Math.round(v/st)*st;
+      v=Math.round(v*1e6)/1e6;
+      sl.value=v; ni.value=v.toFixed(dec);
+      pVals[curType][i]=v;
+      updateFpPreview();
+    });
+    ni.addEventListener('focus',()=>ni.select());
   });
 }
 
 function updateFpPreview(){
   const defs=paramDefs[curType];
-  const area=document.getElementById('force-params');
-  const inputs=area.querySelectorAll('input[type=range]');
-  inputs.forEach((inp,i)=>{
-    const v=parseFloat(inp.value);
-    pVals[curType][i]=v;
-    const sp=document.getElementById(`fpv_${i}`);
-    if(sp) sp.textContent=v.toFixed(defs[i].step<1?2:1)+' '+defs[i].unit;
+  // pVals ya se actualiza en los event listeners de rebuildFpParams
+  // Solo sincronizamos visualmente si hay campos presentes
+  defs.forEach((pd,i)=>{
+    const ni=document.getElementById(`fpv_${i}`);
+    if(ni&&ni.type==='number'){
+      // ya sincronizado por el listener
+    }
   });
 
   // Advertencia α > 0
@@ -1048,15 +1121,32 @@ document.getElementById('btn_reveal').addEventListener('click',()=>{
   render();
 });
 
-function bindSlider(id,lblId,dec,setter){
-  const sl=document.getElementById(id),lb=document.getElementById(lblId);
-  sl.addEventListener('input',()=>{const v=parseFloat(sl.value);setter(v);lb.textContent=v.toFixed(dec);reset();});
+function bindSlider(slId,niId,dec,setter){
+  const sl=document.getElementById(slId);
+  const ni=document.getElementById(niId);
+  if(!sl||!ni) return;
+  sl.addEventListener('input',()=>{
+    const v=parseFloat(sl.value);
+    setter(v);ni.value=v.toFixed(dec);reset();
+  });
+  ni.addEventListener('change',()=>{
+    let v=parseFloat(ni.value);
+    const mn=parseFloat(sl.min),mx=parseFloat(sl.max);
+    if(isNaN(v)) v=parseFloat(sl.value);
+    v=Math.min(mx,Math.max(mn,v));
+    const st=parseFloat(sl.step)||1;
+    v=Math.round(v/st)*st;
+    v=Math.round(v*1e6)/1e6;
+    sl.value=v;ni.value=v.toFixed(dec);
+    setter(v);reset();
+  });
+  ni.addEventListener('focus',()=>ni.select());
 }
-bindSlider('sl_m','lbl_m',2,v=>{m=v;});
-bindSlider('sl_k','lbl_k',2,v=>{k=v;});
-bindSlider('sl_b','lbl_b',2,v=>{b=v;});
-bindSlider('sl_x0','lbl_x0',2,v=>{x0=v;});
-bindSlider('sl_v0','lbl_v0',2,v=>{v0=v;});
+bindSlider('sl_m','ni_m',2,v=>{m=v;});
+bindSlider('sl_k','ni_k',2,v=>{k=v;});
+bindSlider('sl_b','ni_b',2,v=>{b=v;});
+bindSlider('sl_x0','ni_x0',2,v=>{x0=v;});
+bindSlider('sl_v0','ni_v0',2,v=>{v0=v;});
 
 window.addEventListener('resize',render);
 window.addEventListener('load',()=>{rebuildFpParams();updateFpPreview();reset();});
