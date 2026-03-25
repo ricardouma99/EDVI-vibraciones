@@ -500,32 +500,55 @@ function updateDerived(){
   }
   updateBadge();
   updateSliderStep();
-  updateSolVals();
+  if(revealed) updateSolVals();
 }
 
 function updateSolVals(){
-  if(!window.katex) return;
+  // Solo renderizar si KaTeX está listo y el panel visible
+  const panel=document.getElementById('sol_panel');
+  if(!panel||!panel.classList.contains('visible')) return;
+  if(!window.katex||typeof katex.render!=='function'){
+    setTimeout(()=>{ if(revealed) updateSolVals(); },200);
+    return;
+  }
   const reg=regime();
   const elSub=document.getElementById('sol_sub_vals');
   const elCrit=document.getElementById('sol_crit_vals');
   const elOver=document.getElementById('sol_over_vals');
   const mu_=mu(),w=w0();
+  const bSub=document.getElementById('sol_sub');
+  const bCrit=document.getElementById('sol_crit');
+  const bOver=document.getElementById('sol_over');
+
+  function markActive(active, i1, i2){
+    if(active){active.style.opacity='1';active.style.border='1.5px solid #93c5fd';}
+    [i1,i2].forEach(b=>{if(b){b.style.opacity='0.35';b.style.border='';}});
+  }
 
   if(reg==='sub'){
     const {A,delta,wa}=subParams();
-    katex.render(`A=${A.toFixed(4)}\\,\\text{m},\\quad\\delta=${delta.toFixed(4)}\\,\\text{rad},\\quad\\mu=${mu_.toFixed(4)}\\,\\text{s}^{-1},\\quad\\omega_a=${wa.toFixed(4)}\\,\\text{rad/s}`,elSub,{throwOnError:false});
-    if(elCrit)elCrit.innerHTML='';
-    if(elOver)elOver.innerHTML='';
+    katex.render(
+      `A=${A.toFixed(4)}\,\text{m},\;\delta=${delta.toFixed(4)}\,\text{rad},\;\mu=${mu_.toFixed(4)}\,\text{s}^{-1},\;\omega_a=${wa.toFixed(4)}\,\text{rad/s}`,
+      elSub,{throwOnError:false});
+    if(elCrit) elCrit.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    if(elOver) elOver.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    markActive(bSub,bCrit,bOver);
   } else if(reg==='crit'){
     const {C1,C2,mu:mu__}=critParams();
-    katex.render(`C_1=${C1.toFixed(4)}\\,\\text{m},\\quad C_2=${C2.toFixed(4)}\\,\\text{m/s},\\quad\\mu=${mu__.toFixed(4)}\\,\\text{s}^{-1}`,elCrit,{throwOnError:false});
-    if(elSub)elSub.innerHTML='';
-    if(elOver)elOver.innerHTML='';
+    katex.render(
+      `C_1=${C1.toFixed(4)}\,\text{m},\;C_2=${C2.toFixed(4)}\,\text{m/s},\;\mu=${mu__.toFixed(4)}\,\text{s}^{-1}`,
+      elCrit,{throwOnError:false});
+    if(elSub) elSub.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    if(elOver) elOver.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    markActive(bCrit,bSub,bOver);
   } else {
     const {C1,C2,r1,r2}=overParams();
-    katex.render(`C_1=${C1.toFixed(4)},\\;C_2=${C2.toFixed(4)},\\;r_1=${r1.toFixed(4)}\\,\\text{s}^{-1},\\;r_2=${r2.toFixed(4)}\\,\\text{s}^{-1}`,elOver,{throwOnError:false});
-    if(elSub)elSub.innerHTML='';
-    if(elCrit)elCrit.innerHTML='';
+    katex.render(
+      `C_1=${C1.toFixed(4)},\;C_2=${C2.toFixed(4)},\;r_1=${r1.toFixed(4)}\,\text{s}^{-1},\;r_2=${r2.toFixed(4)}\,\text{s}^{-1}`,
+      elOver,{throwOnError:false});
+    if(elSub)  elSub.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    if(elCrit) elCrit.innerHTML='<em style="color:#aaa;font-size:11px">— no activo —</em>';
+    markActive(bOver,bSub,bCrit);
   }
 }
 
@@ -851,8 +874,24 @@ document.getElementById('btn_reset').addEventListener('click',reset);
 document.getElementById('btn_reveal').addEventListener('click',()=>{
   revealed=!revealed;
   const btn=document.getElementById('btn_reveal'),panel=document.getElementById('sol_panel');
-  if(revealed){btn.textContent='✓ Solución revelada';btn.classList.add('shown');panel.classList.add('visible');updateDerived();}
-  else{btn.textContent='▶ Revelar solución';btn.classList.remove('shown');panel.classList.remove('visible');}
+  if(revealed){
+    btn.textContent='✓ Solución revelada';
+    btn.classList.add('shown');
+    panel.classList.add('visible');
+    // Doble RAF + timeout: garantiza que KaTeX esté listo y el panel pintado
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        updateDerived();
+        updateSolVals();
+        // Seguridad extra: reintentar si KaTeX aún no estaba listo
+        setTimeout(()=>{ if(revealed) updateSolVals(); }, 120);
+      });
+    });
+  } else {
+    btn.textContent='▶ Revelar solución';
+    btn.classList.remove('shown');
+    panel.classList.remove('visible');
+  }
   render();
 });
 
